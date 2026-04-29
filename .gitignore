@@ -1,16 +1,10 @@
-# Compiled class file
+# ============================================================
+# Kotlin / JVM
+# ============================================================
 *.class
-
-# Log file
 *.log
-
-# BlueJ files
 *.ctxt
-
-# Mobile Tools for Java (J2ME)
 .mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.nar
@@ -18,10 +12,106 @@
 *.zip
 *.tar.gz
 *.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
-
-# Kotlin Gradle plugin data, see https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
 .kotlin/
+
+# ============================================================
+# Gradle
+# ============================================================
+.gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+!gradle/wrapper/gradle-wrapper.jar
+out/
+
+# ============================================================
+# IntelliJ / Android Studio
+# ============================================================
+.idea/
+*.iml
+*.ipr
+*.iws
+local.properties
+.navigation/
+captures/
+
+# ============================================================
+# macOS / OS
+# ============================================================
+.DS_Store
+Thumbs.db
+
+# ============================================================
+# code-review-graph (auto-built artifacts)
+# ============================================================
+.code-review-graph/
+
+# ============================================================
+# agent-brain (SAN compression — local cache only)
+# ============================================================
+.san/.san_hashes.json
+.san/_cache/
+# NOTE: commit .san/_index.json and .san/src/**/*.san — they are prebuilt
+# knowledge shared across the team.
+
+# ============================================================
+# Internal AI / agent-assisted workflow artifacts (ALL ignored)
+# These contain personal context, absolute paths, internal team
+# personas, and unfinished design decisions. NOT for public repo.
+# ============================================================
+
+# Claude Code per-project config (reveals AI workflow internals)
+.claude/
+
+# Agent-internal project context (has personal/career framing,
+# absolute /Users paths, internal agent identities)
+CLAUDE.md
+
+# Agent-generated working docs (PRD drafts, architecture decisions,
+# sprint plans, test strategy — all internal). Curated /docs for
+# the public docs site go in a separate location later.
+docs/
+
+# Agent-brain SAN compressed code cache + index
+.san/
+
+# Project-level MCP server config — has user-specific absolute paths
+.mcp.json
+
+# Agent draft / scratch markdown anywhere in the tree
+**/*.agent-draft.md
+**/*.agent-scratch.md
+
+# ============================================================
+# Secrets — defensive (should NEVER appear in this repo)
+# ============================================================
+# Generic env files
+.env
+.env.*
+!.env.example
+
+# GPG / signing keys (for Maven Central publishing — NEVER commit)
+*.asc
+*.gpg
+*.key
+*.p12
+*.pem
+secring.*
+pubring.*
+.gnupg/
+
+# Sonatype / Maven Central credentials
+gradle.properties
+
+# AWS / GCP / cloud credentials
+.aws/
+credentials.json
+service-account*.json
+*.pem.key
+
+# IDE-stored credentials
+.idea/sonarlint*
+.idea/httpRequests/
+.idea/replstate.xml

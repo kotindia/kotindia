@@ -1,0 +1,156 @@
+# KotIndia — detekt configuration
+# Built on top of default ruleset. Override only what diverges from defaults.
+# Version: detekt 1.23.8
+
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+  weights: {}
+
+config:
+  validation: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
+
+processors:
+  active: true
+  exclude:
+    - 'DetektProgressListener'
+
+console-reports:
+  active: true
+  exclude:
+    - 'ProjectStatisticsReport'
+    - 'ComplexityReport'
+    - 'NotificationReport'
+
+output-reports:
+  active: true
+  exclude: []
+
+comments:
+  active: true
+  AbsentOrWrongFileLicense:
+    active: false  # License header enforced by ktlint spotless, not detekt
+  CommentOverPrivateFunction:
+    active: false
+  CommentOverPrivateProperty:
+    active: false
+  DeprecatedBlockTag:
+    active: true
+  EndOfSentenceFormat:
+    active: false
+  KDocReferencesNonPublicProperty:
+    active: false
+  OutdatedDocumentation:
+    active: true
+    allowParamOnConstructorProperties: false
+    allowMissingDocumentation: false
+  UndocumentedPublicClass:
+    active: false  # Enforced manually via code review; not every internal object needs KDoc
+  UndocumentedPublicFunction:
+    active: false  # Same — we require KDoc on public API, but detekt rule too noisy for internal
+  UndocumentedPublicProperty:
+    active: false
+
+complexity:
+  active: true
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 15  # Validators are table-driven — allow moderate complexity
+  LongMethod:
+    active: true
+    threshold: 60
+  LongParameterList:
+    active: true
+    functionThreshold: 6
+    constructorThreshold: 7
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 15
+    thresholdInClasses: 11
+    thresholdInInterfaces: 10
+    thresholdInObjects: 11
+    thresholdInEnums: 11
+
+empty-blocks:
+  active: true
+
+exceptions:
+  active: true
+
+formatting:
+  active: true
+  android: false
+  autoCorrect: false  # ktlint handles auto-correct; detekt just reports
+
+naming:
+  active: true
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+  ConstructorParameterNaming:
+    active: true
+    parameterPattern: '[a-z][A-Za-z0-9]*'
+  FunctionNaming:
+    active: true
+    functionPattern: '([a-z][a-zA-Z0-9]*)|(`.*`)'
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][A-Za-z0-9]*'
+
+performance:
+  active: true
+
+potential-bugs:
+  active: true
+  DontDowncastCollectionTypes:
+    active: true
+  ElseCaseInsteadOfExhaustiveWhen:
+    active: false  # We intentionally document `else` for forward-compat on InvalidReason
+  ImplicitUnitReturnType:
+    active: true
+  NullableToStringCall:
+    active: true
+
+style:
+  active: true
+  ForbiddenComment:
+    active: true
+    values:
+      - reason: 'Use a GitHub issue instead'
+        value: 'FIXME:'
+      - reason: 'Resolve or remove'
+        value: 'STOPSHIP'
+    allowedPatterns: ''
+  MagicNumber:
+    active: true
+    excludes: ['**/test/**', '**/Test*', '**/*Test', '**/*Spec']
+    ignoreNumbers: ['-1', '0', '1', '2', '10', '100']
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: false
+    ignoreLocalVariableDeclaration: false
+    ignoreConstantDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotation: false
+    ignoreNamedArgument: true
+    ignoreEnums: false
+    ignoreRanges: false
+    ignoreExtensionFunctions: true
+  MaxLineLength:
+    active: true
+    maxLineLength: 120
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
+    excludeRawStrings: true
+  NoTabs:
+    active: true
+  ReturnCount:
+    active: true
+    max: 4  # Validators may have several early returns for invalid reasons
+  UnusedPrivateMember:
+    active: true
+  WildcardImport:
+    active: true
+    excludeImports: []

@@ -1,0 +1,33 @@
+public final class io/github/kotindia/InvalidReason : java/lang/Enum {
+	public static final field EMPTY Lio/github/kotindia/InvalidReason;
+	public static final field INVALID_CATEGORY Lio/github/kotindia/InvalidReason;
+	public static final field INVALID_CHECKSUM Lio/github/kotindia/InvalidReason;
+	public static final field INVALID_FORMAT Lio/github/kotindia/InvalidReason;
+	public static final field INVALID_PREFIX Lio/github/kotindia/InvalidReason;
+	public static final field WRONG_LENGTH Lio/github/kotindia/InvalidReason;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lio/github/kotindia/InvalidReason;
+	public static fun values ()[Lio/github/kotindia/InvalidReason;
+}
+
+public abstract interface class io/github/kotindia/ValidationResult {
+}
+
+public final class io/github/kotindia/ValidationResult$Invalid : io/github/kotindia/ValidationResult {
+	public fun <init> (Lio/github/kotindia/InvalidReason;)V
+	public final fun component1 ()Lio/github/kotindia/InvalidReason;
+	public final fun copy (Lio/github/kotindia/InvalidReason;)Lio/github/kotindia/ValidationResult$Invalid;
+	public static synthetic fun copy$default (Lio/github/kotindia/ValidationResult$Invalid;Lio/github/kotindia/InvalidReason;ILjava/lang/Object;)Lio/github/kotindia/ValidationResult$Invalid;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getReason ()Lio/github/kotindia/InvalidReason;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kotindia/ValidationResult$Valid : io/github/kotindia/ValidationResult {
+	public static final field INSTANCE Lio/github/kotindia/ValidationResult$Valid;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

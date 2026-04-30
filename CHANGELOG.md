@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Mobile` object validator with `validate(String): ValidationResult`, `isValid(String): Boolean`, `format(String, Boolean): String`, `mask(String, Int, Int, Char): String`. Validates Indian 10-digit mobile numbers (prefix 6/7/8/9). Accepts E.164 (+91) and leading-zero forms.
 - `Pincode` object validator with `validate(String): ValidationResult`, `isValid(String): Boolean`, `format(String): String`. Validates Indian 6-digit Postal Index Numbers (first digit 1-9). No `mask()` method — pincodes are not PII (pincodes are public address info).
 - `IFSC` object validator with `validate(String): ValidationResult`, `isValid(String): Boolean`, `format(String): String`. Validates RBI 11-character Indian Financial System Codes (`[A-Z]{4}0[A-Z0-9]{6}`). `format()` normalizes to canonical uppercase (no separators — IFSC has no display separator convention). No `mask()` method per PII-only policy (IFSC is a public bank routing code).
+- `PAN` object validator with `validate(String): ValidationResult`, `isValid(String): Boolean`, `format(String): String`, `mask(String, Int, Int, Char): String`. Validates Indian Permanent Account Number (`[A-Z]{5}[0-9]{4}[A-Z]`, 4th-char category rules for P/C/H/A/B/G/J/L/F/T). First use of `InvalidReason.INVALID_CATEGORY`. `mask()` defaults to last-4-visible per standard PII masking policy (PAN is a Private government ID per §3.5). Middle-4-digits-visible pattern available via `PAN.mask(value, 5, 1)` — documented in KDoc.
 
 ### Changed
 

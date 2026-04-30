@@ -112,10 +112,10 @@ kover {
         }
         verify {
             rule("Line coverage threshold") {
-                // TODO(slice-2): flip minValue to 100 when first validator lands.
+                // 100% line coverage required from Slice 3 onward (per OQ-6 resolution)
                 // Kover 0.9.x: bound{} uses minValue only (metric/aggregation removed from DSL).
                 // Default metric = LINE, default aggregation = COVERED_PERCENTAGE.
-                minBound(0)
+                minBound(100)
             }
         }
     }

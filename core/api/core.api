@@ -102,6 +102,13 @@ public final class io/github/kotindia/Pincode {
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
 }
 
+public final class io/github/kotindia/TAN {
+	public static final field INSTANCE Lio/github/kotindia/TAN;
+	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun isValid (Ljava/lang/String;)Z
+	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+}
+
 public final class io/github/kotindia/UAN {
 	public static final field INSTANCE Lio/github/kotindia/UAN;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;

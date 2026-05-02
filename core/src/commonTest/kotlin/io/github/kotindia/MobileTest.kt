@@ -178,6 +178,16 @@ class MobileTest {
         assertEquals(InvalidReason.INVALID_FORMAT, result.reason)
     }
 
+    @Test
+    fun invalidFormatAllDevanagariDigits() {
+        // Devanagari digits ('०'..'९', U+0966..U+096F) pass Kotlin's isDigit() (Unicode Nd category).
+        // Library MUST reject them — only ASCII '0'..'9' are valid Mobile digits.
+        // Without the ASCII range guard, this 10-char all-Devanagari input would silently validate as Valid.
+        val result = Mobile.validate("९८७६५४३२१०")
+        assertIs<ValidationResult.Invalid>(result)
+        assertEquals(InvalidReason.INVALID_FORMAT, result.reason)
+    }
+
     // -----------------------------------------------------------------------
     // INVALID_PREFIX cases (≥4)
     // -----------------------------------------------------------------------

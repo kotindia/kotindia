@@ -174,6 +174,18 @@ class PincodeTest {
         assertEquals(InvalidReason.INVALID_FORMAT, result.reason)
     }
 
+    /**
+     * Devanagari digits ('०'..'९', U+0966..U+096F) pass Kotlin's isDigit() (Unicode Nd category).
+     * Library MUST reject them — only ASCII '0'..'9' are valid Pincode digits.
+     * Without the ASCII range guard, this 6-char all-Devanagari input would silently validate as Valid.
+     */
+    @Test
+    fun invalidFormatAllDevanagariDigits() {
+        val result = Pincode.validate("५६००१०")
+        assertIs<ValidationResult.Invalid>(result)
+        assertEquals(InvalidReason.INVALID_FORMAT, result.reason)
+    }
+
     @Test
     fun invalidFormatSpecialChar() {
         val result = Pincode.validate("5600!1")

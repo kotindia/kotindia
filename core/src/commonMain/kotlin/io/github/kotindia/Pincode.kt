@@ -56,7 +56,7 @@ public object Pincode {
         if (normalized.length != EXPECTED_LENGTH) {
             return ValidationResult.Invalid(InvalidReason.WRONG_LENGTH)
         }
-        if (normalized.any { !it.isDigit() }) {
+        if (normalized.any { it !in '0'..'9' }) {
             return ValidationResult.Invalid(InvalidReason.INVALID_FORMAT)
         }
         if (normalized[0] == '0') {

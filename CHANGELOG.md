@@ -30,3 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Kover line coverage threshold raised from 0% to 100% (enforced via koverVerify in CI).
+
+### Fixed
+
+- `Mobile` and `Pincode` validators now reject non-ASCII digits (including Devanagari `'०'..'९'`). Previously they used Kotlin's Unicode-aware `isDigit()` which accepts Unicode `Nd` digits — an all-Devanagari input of the correct length would silently validate as `Valid`. They now use an ASCII-range guard (`it !in '0'..'9'`) consistent with `ESIC` and `UAN`. Added explicit Devanagari-digit rejection tests to both validators.

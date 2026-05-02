@@ -66,7 +66,7 @@ public object Mobile {
         if (normalized.length != EXPECTED_LENGTH) {
             return ValidationResult.Invalid(InvalidReason.WRONG_LENGTH)
         }
-        if (normalized.any { !it.isDigit() }) {
+        if (normalized.any { it !in '0'..'9' }) {
             return ValidationResult.Invalid(InvalidReason.INVALID_FORMAT)
         }
         if (normalized[0] !in VALID_FIRST_DIGITS) {

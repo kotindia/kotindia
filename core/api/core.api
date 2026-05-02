@@ -16,6 +16,13 @@ public final class io/github/kotindia/AadhaarVID {
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
 }
 
+public final class io/github/kotindia/CIN {
+	public static final field INSTANCE Lio/github/kotindia/CIN;
+	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun isValid (Ljava/lang/String;)Z
+	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+}
+
 public final class io/github/kotindia/ESIC {
 	public static final field INSTANCE Lio/github/kotindia/ESIC;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;

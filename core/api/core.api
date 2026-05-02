@@ -77,6 +77,15 @@ public final class io/github/kotindia/Pincode {
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
 }
 
+public final class io/github/kotindia/UAN {
+	public static final field INSTANCE Lio/github/kotindia/UAN;
+	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun isValid (Ljava/lang/String;)Z
+	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
+	public static synthetic fun mask$default (Lio/github/kotindia/UAN;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+}
+
 public abstract interface class io/github/kotindia/ValidationResult {
 }
 

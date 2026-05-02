@@ -70,6 +70,15 @@ public final class io/github/kotindia/PAN {
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
 }
 
+public final class io/github/kotindia/Passport {
+	public static final field INSTANCE Lio/github/kotindia/Passport;
+	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun isValid (Ljava/lang/String;)Z
+	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
+	public static synthetic fun mask$default (Lio/github/kotindia/Passport;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+}
+
 public final class io/github/kotindia/Pincode {
 	public static final field INSTANCE Lio/github/kotindia/Pincode;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;

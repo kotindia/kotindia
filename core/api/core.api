@@ -23,6 +23,15 @@ public final class io/github/kotindia/CIN {
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
 }
 
+public final class io/github/kotindia/DL {
+	public static final field INSTANCE Lio/github/kotindia/DL;
+	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun isValid (Ljava/lang/String;)Z
+	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
+	public static synthetic fun mask$default (Lio/github/kotindia/DL;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+}
+
 public final class io/github/kotindia/ESIC {
 	public static final field INSTANCE Lio/github/kotindia/ESIC;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;

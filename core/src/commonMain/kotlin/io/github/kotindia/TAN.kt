@@ -31,7 +31,6 @@ package io.github.kotindia
  *
  * This object is stateless and thread-safe.
  *
- * @suppress ClassName TAN is a universal acronym — preserved for consumer readability.
  * @sample io.github.kotindia.samples.tanSample
  */
 @Suppress("ClassName") // TAN is a universal acronym — preserved for consumer readability

@@ -19,7 +19,7 @@ package io.github.kotindia
  * }
  * ```
  *
- * Or use the convenience [isValid] shorthand:
+ * Or use the convenience `isValid` shorthand (available on each validator object):
  *
  * ```kotlin
  * val ok: Boolean = Mobile.validate("9876543210") is ValidationResult.Valid

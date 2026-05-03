@@ -31,7 +31,6 @@ package io.github.kotindia
  *
  * This object is stateless and thread-safe.
  *
- * @suppress ClassName VPA is a universal acronym — preserved for consumer readability.
  * @sample io.github.kotindia.samples.vpaSample
  */
 @Suppress("ClassName") // VPA is a universal acronym — preserved for consumer readability

@@ -27,7 +27,6 @@ package io.github.kotindia
  * This object is stateless and thread-safe. No checksum exists for IFSC — validation
  * is structural (format) only per RBI specification.
  *
- * @suppress ClassName IFSC is a universal acronym — preserved for consumer readability.
  * @sample io.github.kotindia.samples.ifscSample
  */
 @Suppress("ClassName") // IFSC is a universal acronym — preserved for consumer readability

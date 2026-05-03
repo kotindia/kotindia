@@ -40,7 +40,6 @@ package io.github.kotindia
  * This object is stateless and thread-safe. No checksum exists for CIN —
  * validation is structural only per MCA specification.
  *
- * @suppress ClassName CIN is a universal acronym — preserved for consumer readability.
  * @sample io.github.kotindia.samples.cinSample
  */
 @Suppress("ClassName") // CIN is a universal acronym — preserved for consumer readability

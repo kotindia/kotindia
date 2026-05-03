@@ -32,6 +32,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DL` validator (`object DL`) with `validate`, `isValid`, `format`, `mask`. Validates post-2013 Sarathi Driving License format: 2-letter state code (38 valid codes including OR legacy and LA post-2019) + 1-2 digit RTO code + 4-digit year + 7-digit serial. Pre-2013 state-specific formats explicitly NOT supported — inputs in pre-2013 format return `INVALID_FORMAT` or `WRONG_LENGTH` (R4 risk mitigation, documented in KDoc). `normalize()` strips hyphens in addition to whitespace (Digilocker DL strings use hyphens as separators). `mask()` defaults to last-4-visible per DL Private government ID categorization (PROJECT_PLAN §3.5). Includes `DlOutOfScopeTest.kt` documenting rejected pre-2013 formats and unsupported state-prefix patterns.
 - `VehicleRC` object validator with `validate(String): ValidationResult`, `isValid(String): Boolean`, `format(String): String`. Validates Indian vehicle registration plate format `[A-Z]{2}[0-9]{1,2}[A-Z]{1,3}[0-9]{4}` (8–11 chars). State code validated against the same closed 38-entry MoRTH-assigned set used by `DL` (includes OR legacy Odisha; excludes non-canonical UT — active Uttarakhand code is UK). Accepts space- and hyphen-separated forms; `format()` normalizes to uppercase canonical no separator. No `mask()` per PII-only policy (vehicle plates are publicly visible).
 
+- README.md fully rewritten: badges (Maven Central, Build, License, KMP), one-paragraph pitch,
+  install snippet (Gradle Kotlin DSL), 16-validator quick reference table with mask() column,
+  6 code examples (Aadhaar, PAN, GSTIN, Mobile, IFSC, ValidationResult pattern matching),
+  API docs link, contributing section, Apache 2.0 license.
+- Dokka 2.2.0 HTML generation configured in `core/build.gradle.kts` (module name `kotindia-core`,
+  source links to `main` branch on GitHub, `suppressInheritedMembers = true`,
+  `reportUndocumented = true` KDoc completeness gate). Output: `core/build/dokka/html/`. Not
+  committed to repo (covered by `build/` gitignore).
+- `.github/workflows/docs.yml`: new CI workflow generates Dokka HTML on every push/PR to main
+  and uploads as artifact `dokka-html` (7-day retention). gh-pages deploy gated to Slice 12.
+
 ### Changed
 
 - Kover line coverage threshold raised from 0% to 100% (enforced via koverVerify in CI).

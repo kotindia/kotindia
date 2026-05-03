@@ -47,8 +47,8 @@ package io.github.kotindia.internal
  *    product = value × factor
  *    contribution = (product / 36) + (product % 36)
  * 3. Sum all 14 contributions.
- * 4. checkCharIndex = (36 - (sum % 36)) % 36
- * 5. checkChar = BASE36[checkCharIndex]
+ * 4. `checkCharIndex` = (36 - (sum % 36)) % 36
+ * 5. `checkChar` = `BASE36[checkCharIndex]`
  *
  * NOT part of the public API. `internal` modifier blocks consumer access.
  * Used by: [io.github.kotindia.GSTIN]
@@ -69,9 +69,9 @@ internal object GstinChecksum {
      *   factor       = (i % 2) + 1                (1 at even positions, 2 at odd positions)
      *   product      = value × factor
      *   contribution = (product / 36) + (product % 36)
-     * sum  = sum of all 14 contributions
-     * idx  = (36 − (sum % 36)) % 36
-     * char = BASE36[idx]
+     * sum   = sum of all 14 contributions
+     * `idx`  = (36 − (sum % 36)) % 36
+     * `char` = `BASE36[idx]`
      *
      * @param first14 The first 14 uppercase characters of a GSTIN.
      * @return The GSTN base-36 check character to append at position 14.

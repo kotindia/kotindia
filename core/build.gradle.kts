@@ -15,6 +15,7 @@
  */
 
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import java.net.URI
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -108,6 +109,9 @@ kover {
             excludes {
                 // Exclude generated / build-config classes if any appear
                 classes("*.BuildConfig")
+                // Exclude documentation-only samples package — pure @sample snippets,
+                // not part of the library logic, never exercised by unit tests.
+                packages("io.github.kotindia.samples")
             }
         }
         verify {
@@ -143,4 +147,31 @@ detekt {
     config.setFrom(rootProject.files("config/detekt/detekt.yml"))
     buildUponDefaultConfig = true
     allRules = false
+}
+
+// ---------------------------------------------------------------------------
+// Dokka 2.x HTML generation configuration (Slice 11)
+// Plugin applied in root build.gradle.kts (alias(libs.plugins.dokka)).
+// Output: core/build/dokka/html/ — NOT committed (covered by build/ gitignore).
+// Source links point to the main branch on GitHub; update to a tag in Slice 12.
+// reportUndocumented = true enforces KDoc completeness as a build gate (AC4).
+// ---------------------------------------------------------------------------
+
+dokka {
+    moduleName.set("kotindia-core")
+    dokkaSourceSets.configureEach {
+        sourceLink {
+            localDirectory.set(file("src"))
+            remoteUrl.set(URI("https://github.com/kotindia/kotindia/tree/main/core/src"))
+            remoteLineSuffix.set("#L")
+        }
+        reportUndocumented.set(true)
+        // Exclude documentation-only samples package from the public API docs.
+        // It is internal by convention (all functions are `internal`) but Dokka
+        // would still traverse it. Suppressing keeps the generated index clean.
+        perPackageOption {
+            matchingRegex.set("io\\.github\\.kotindia\\.samples.*")
+            suppress.set(true)
+        }
+    }
 }

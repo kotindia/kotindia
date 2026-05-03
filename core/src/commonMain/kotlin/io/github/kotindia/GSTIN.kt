@@ -34,7 +34,7 @@ import io.github.kotindia.internal.GstinChecksum
  * - Code 38 (Ladakh — created post-2019 reorganisation)
  *
  * **GSTIN is a public business identifier** — searchable on the GSTN taxpayer portal
- * (https://services.gstn.gov.in/). It is NOT personal PII. **No [mask] method is provided.**
+ * (https://services.gstn.gov.in/). It is NOT personal PII. **No `mask()` method is provided.**
  *
  * **Accepted input forms** (all normalised before validation):
  * - Canonical uppercase: `"27AAPFU0939F1ZV"`

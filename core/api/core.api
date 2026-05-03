@@ -155,3 +155,10 @@ public final class io/github/kotindia/ValidationResult$Valid : io/github/kotindi
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class io/github/kotindia/VehicleRC {
+	public static final field INSTANCE Lio/github/kotindia/VehicleRC;
+	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun isValid (Ljava/lang/String;)Z
+	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+}
+

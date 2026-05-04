@@ -27,7 +27,11 @@ plugins {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // PREFER_SETTINGS: settings-declared repos take precedence; project-declared repos
+    // (e.g. mavenLocal() added internally by com.vanniktech.maven.publish) are still
+    // allowed. Changed from FAIL_ON_PROJECT_REPOS to accommodate Vanniktech 0.13.0
+    // which adds mavenLocal() internally for publishToMavenLocal support (Slice 12).
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         mavenCentral()
         google()

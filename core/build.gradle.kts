@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import java.net.URI
 
@@ -24,6 +27,7 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.dokka)
     alias(libs.plugins.binary.compat.validator)
+    alias(libs.plugins.vanniktech.publish)
 }
 
 // ---------------------------------------------------------------------------
@@ -174,4 +178,59 @@ dokka {
             suppress.set(true)
         }
     }
+}
+
+// ---------------------------------------------------------------------------
+// Maven Central publishing — Vanniktech 0.33.0 (Sonatype Central Portal)
+// Credentials are NEVER hardcoded here. They come from:
+//   - Local dev: ~/.gradle/gradle.properties (ORG_GRADLE_PROJECT_* vars)
+//   - CI (release.yml): GitHub Actions secrets injected as env vars
+// Actual publish is gated by Sandeep tagging v0.1.0. See docs/build/publishing.md.
+// Reference: https://vanniktech.github.io/gradle-maven-publish-plugin/central/
+// ---------------------------------------------------------------------------
+
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+    signAllPublications()
+
+    coordinates("io.github.kotindia", "core", "0.1.0")
+
+    pom {
+        name.set("KotIndia Core")
+        description.set(
+            "Canonical Indian developer toolkit for Kotlin Multiplatform — " +
+                "validators, formatters, and masking utilities for PAN, Aadhaar, " +
+                "GSTIN, IFSC, Mobile, and more.",
+        )
+        url.set("https://github.com/kotindia/kotindia")
+
+        licenses {
+            license {
+                name.set("Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("kotindia")
+                name.set("KotIndia")
+                url.set("https://github.com/kotindia")
+            }
+        }
+
+        scm {
+            connection.set("scm:git:https://github.com/kotindia/kotindia.git")
+            developerConnection.set("scm:git:ssh://git@github.com/kotindia/kotindia.git")
+            url.set("https://github.com/kotindia/kotindia/tree/main")
+        }
+    }
+
+    configure(
+        KotlinMultiplatform(
+            javadocJar = JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
+            sourcesJar = true,
+        ),
+    )
 }

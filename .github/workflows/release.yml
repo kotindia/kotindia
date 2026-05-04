@@ -1,0 +1,68 @@
+name: Release
+
+# WARNING: Do NOT push the v0.1.0 tag until ALL Sonatype + GPG steps
+# in docs/build/publishing.md are complete. The workflow will fail if
+# secrets SONATYPE_USERNAME, SONATYPE_PASSWORD, GPG_PRIVATE_KEY, or
+# GPG_PASSWORD are missing — recoverable but messy.
+# See: docs/build/publishing.md for the complete setup checklist.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+# Required for gh-pages deploy (peaceiris action needs write access to contents)
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Publish to Maven Central
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Run check before publishing
+        run: ./gradlew check --no-daemon --stacktrace
+
+      - name: Publish to Maven Central
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_PASSWORD }}
+        run: ./gradlew :core:publishAndReleaseToMavenCentral --no-configuration-cache --no-daemon --stacktrace
+
+  publish-docs:
+    name: Deploy Dokka to GitHub Pages
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Generate Dokka HTML
+        run: ./gradlew :core:dokkaGeneratePublicationHtml --no-daemon --stacktrace
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./core/build/dokka/html
+          publish_branch: gh-pages

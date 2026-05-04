@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - YYYY-MM-DD
+
 ### Added
 
 - `ValidationResult` sealed interface (`Valid` data object, `Invalid` data class with `reason` field) — public API contract for all validators
@@ -42,6 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   committed to repo (covered by `build/` gitignore).
 - `.github/workflows/docs.yml`: new CI workflow generates Dokka HTML on every push/PR to main
   and uploads as artifact `dokka-html` (7-day retention). gh-pages deploy gated to Slice 12.
+- Maven Central publishing configuration: Vanniktech `mavenPublishing` block in `core/build.gradle.kts`
+  with POM metadata (groupId `io.github.kotindia`, artifactId `core`, version `0.1.0`), GPG signing
+  via in-memory keys, `automaticRelease = true` targeting Sonatype Central Portal. Upgraded
+  `com.vanniktech.maven.publish` from 0.13.0 to 0.33.0 for Gradle 9 compatibility (0.13.0 uses
+  removed `org.gradle.util.VersionNumber`). Tag-triggered `release.yml` workflow publishes to Maven
+  Central then deploys Dokka HTML to gh-pages (gated on successful publish). `docs/build/publishing.md`
+  8-step credential setup checklist for maintainer.
 
 ### Changed
 
@@ -50,3 +59,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `Mobile` and `Pincode` validators now reject non-ASCII digits (including Devanagari `'०'..'९'`). Previously they used Kotlin's Unicode-aware `isDigit()` which accepts Unicode `Nd` digits — an all-Devanagari input of the correct length would silently validate as `Valid`. They now use an ASCII-range guard (`it !in '0'..'9'`) consistent with `ESIC` and `UAN`. Added explicit Devanagari-digit rejection tests to both validators.
+
+[unreleased]: https://github.com/kotindia/kotindia/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/kotindia/kotindia/releases/tag/v0.1.0

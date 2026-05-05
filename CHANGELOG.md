@@ -30,6 +30,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework`. Pre-compile Gradle run
   script rebuilds the KMP framework automatically on each Xcode build. Verified:
   `xcodebuild -list` lists target `iosApp` + scheme `iosApp`; `xcodebuild ... build` succeeds.
+- `kotindia.useMavenCore` Gradle property in `demo-app/shared/build.gradle.kts`. Pass
+  `-Pkotindia.useMavenCore=true` to swap the in-repo `project(":core")` dependency for the
+  published `io.github.kotindia:core:0.1.0` artifact from Maven Central. Validates the
+  production consumer experience end-to-end (POM resolution, KMP variant selection,
+  sources/javadoc/.pom.asc availability, transitive dependency closure). Default unchanged
+  (`project(":core")`) so day-to-day iteration loop stays fast. Verified: Maven mode resolves
+  with only `org.jetbrains.kotlin:kotlin-stdlib` transitive — zero-dep guarantee held in the
+  published artifact.
+
+### Changed
+
+- `demo-app/shared` no longer declares the `iosX64` KMP target. Compose Multiplatform 1.11.0-rc01
+  does not publish `iosX64` artifacts on Maven Central (HTTP 404 on `material3-uikitx64`,
+  `ui-uikit-uikitx64`, etc. for that version). Apple Silicon Macs use `iosSimulatorArm64`
+  natively; Intel Macs are end-of-life for iOS development. The `:core` library still
+  publishes `iosX64` (only Compose Multiplatform's UI artifacts are missing — `:core` has
+  zero runtime deps so it is unaffected). Re-add to `demo-app/shared` when JetBrains restores
+  iosX64 publications, or when CMP stable lands.
+- Gradle daemon JVM heap raised from 1 GB default to `-Xmx4g -XX:MaxMetaspaceSize=1g` in
+  `gradle.properties`. Required for Compose Multiplatform Android dex merging
+  (`mergeExtDexDebug`) once the demo-app pulls in Compose runtime/foundation/material3/ui
+  transitive bytecode — the standard CMP setting.
+- `org.gradle.jvmargs` includes `-XX:-HeapDumpOnOutOfMemoryError` to suppress on-disk heap
+  dumps when the JVM hits OOM. Heap dumps would otherwise drop ~1 GB `*.hprof` files at the
+  repo root containing JVM memory snapshots — a credential-leak vector for the Gradle daemon
+  if it had loaded Sonatype/GPG creds from `~/.gradle/gradle.properties`.
+
+### Fixed
+
+- iOS demo app crashed at launch with `IllegalStateException` from
+  `androidx.compose.ui.uikit.PlistSanityCheck`. The runtime check pre-dates Xcode 26's
+  `INFOPLIST_KEY_*_Generation` flags and false-positives when the generated `Info.plist`
+  doesn't contain the expected `UILaunchScreen` / `UIApplicationSceneManifest` dicts.
+  Resolved by passing `enforceStrictPlistSanityCheck = false` via
+  `ComposeUIViewController(configure = { ... })` in `MainViewController.kt` — the
+  JetBrains-documented escape hatch.
+- iOS Xcode build failed with "User Script Sandboxing Enabled in Xcode Project" under
+  Xcode 26's default `ENABLE_USER_SCRIPT_SANDBOXING=YES`. The pre-compile Run Script Phase
+  shells out to Gradle, which needs to read repo files outside `SRCROOT`. Set
+  `ENABLE_USER_SCRIPT_SANDBOXING=NO` in both Debug and Release build configurations of the
+  iOS Xcode project — standard fix for KMP/CMP iOS projects with Gradle Run Script Phases.
+
+### Security
+
+- `.gitignore` now covers `*.hprof`. Heap dumps are full JVM memory snapshots and could leak
+  secrets the Gradle daemon had loaded (Sonatype/GPG credentials from
+  `~/.gradle/gradle.properties`). Combined with `-XX:-HeapDumpOnOutOfMemoryError` (above)
+  this closes both the prevention (no auto-dump) and defense-in-depth (gitignore catches
+  any manual dumps) paths.
 
 ## [0.1.0] - 2026-05-05
 

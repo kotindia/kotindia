@@ -49,7 +49,21 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":core"))
+            // Toggle: -Pkotindia.useMavenCore=true → consume the published artifact
+            // from Maven Central instead of the in-repo :core source. Use this to
+            // verify the production consumer experience (POM resolution, KMP variant
+            // selection, sources/javadoc/.asc availability) end-to-end.
+            //
+            // Default (no flag): project(":core") — fast iteration, demo reacts to
+            // unreleased :core changes, no publish round-trip.
+            val useMavenCore =
+                (providers.gradleProperty("kotindia.useMavenCore").orNull ?: "false")
+                    .toBoolean()
+            if (useMavenCore) {
+                implementation("io.github.kotindia:core:0.1.0")
+            } else {
+                implementation(project(":core"))
+            }
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

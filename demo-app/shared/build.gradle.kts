@@ -30,14 +30,17 @@ kotlin {
     androidTarget()
     jvm("desktop")
     iosArm64()
-    iosX64()
     iosSimulatorArm64()
+    // iosX64 (Intel-Mac iOS simulator) intentionally omitted — Compose Multiplatform 1.11.0-rc01
+    // does not publish iosX64 artifacts on Maven Central. Apple Silicon Macs use iosSimulatorArm64
+    // natively; Intel Macs are end-of-life for iOS development. Re-add when JetBrains restores
+    // iosX64 publications, OR drop entirely when CMP stable lands. Brain: dec_20260506_001754_221ed0
 
     // iOS framework configuration — direct .framework embedding (Marcus arch ruling, OQ-1 RESOLVED).
     // KGP generates shared.framework; Xcode project references it via SRCROOT-relative path:
     //   $(SRCROOT)/../../demo-app/shared/build/bin/iosSimulatorArm64/debugFramework
     // No Podfile, no CocoaPods, no pod install step.
-    listOf(iosArm64(), iosX64(), iosSimulatorArm64()).forEach { iosTarget ->
+    listOf(iosArm64(), iosSimulatorArm64()).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "shared"
             isStatic = true

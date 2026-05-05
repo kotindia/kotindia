@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Multiplatform demo app (`demo-app/`) — Compose Multiplatform showcase for Android, Desktop
+  (JVM), and iOS demonstrating all 16 `core` validators across 4 tabs: PII validators (with
+  mask preview), public-info validators, algorithmic showcase (Verhoeff, Luhn, GSTIN checksum
+  explanation), and About. Consumes `:core` via project dependency (`project(":core")`). Excluded
+  from Maven Central publishing, Kover coverage, Dokka API docs, binary-compat-validator, and
+  `explicitApi()` gates per PROJECT_PLAN guardrails (AC2).
+- New CI workflow `.github/workflows/demo-app.yml`: builds Android + JVM Desktop on
+  `ubuntu-latest`, links iOS framework on `macos-latest`. Failures block PRs but do NOT block
+  `release.yml` (tag-triggered). Includes AC10 exclusion verification steps (apiCheck, koverVerify,
+  publishToMavenLocal artifact guard).
+- iOS Xcode project skeleton deferred to Slice 13b. The shared framework builds via Gradle
+  (`./gradlew :demo-app:shared:linkDebugFrameworkIosSimulatorArm64`). Swift source stubs
+  (`iOSApp.swift`, `ContentView.swift`) committed to `demo-app/iosApp/iosApp/`. Setup steps
+  documented in `demo-app/iosApp/README.md`. Direct `.framework` embedding per Marcus arch ruling
+  (OQ-1 RESOLVED) — no CocoaPods.
+
 ## [0.1.0] - 2026-05-05
 
 ### Added

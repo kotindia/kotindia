@@ -25,4 +25,10 @@ plugins {
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.vanniktech.publish) apply false
     alias(libs.plugins.binary.compat.validator) apply false
+    // demo-app plugins — applied only in demo-app subprojects, never in :core
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.compose.multiplatform) apply false
+    alias(libs.plugins.kotlin.compose) apply false
 }

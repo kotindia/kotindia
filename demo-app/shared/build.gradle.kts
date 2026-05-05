@@ -1,0 +1,81 @@
+// demo-app:shared — Compose Multiplatform KMP module
+//
+// GUARDRAILS (AC2 — merge blocker if violated):
+// - NO alias(libs.plugins.vanniktech.publish) — demo-app is never published to Maven Central
+// - NO alias(libs.plugins.kover) — demo-app excluded from coverage (Kover scoped to :core only)
+// - NO alias(libs.plugins.dokka) — demo-app classes are not part of public API docs
+// - NO alias(libs.plugins.binary.compat.validator) — binary-compat-validator applied only in :core;
+//     demo-app subprojects are naturally invisible to apiValidation (no ignoredProjects needed)
+// - NO explicitApi() — demo-app is not a library; all code is internal-by-convention
+//
+// enforceZeroDeps note: that task in :core scans :core's *Implementation configurations only.
+// This module's Compose deps are in a separate Gradle project and do NOT appear in :core's
+// configuration graph — no changes to enforceZeroDeps needed (AC2 §enforceZeroDeps scope).
+
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
+plugins {
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlin.compose)
+    // ktlint + detekt intentionally omitted — demo code is not library code
+}
+
+kotlin {
+    // NO explicitApi() — demo-app is not a library
+    jvmToolchain(17)
+
+    androidTarget()
+    jvm("desktop")
+    iosArm64()
+    iosX64()
+    iosSimulatorArm64()
+
+    // iOS framework configuration — direct .framework embedding (Marcus arch ruling, OQ-1 RESOLVED).
+    // KGP generates shared.framework; Xcode project references it via SRCROOT-relative path:
+    //   $(SRCROOT)/../../demo-app/shared/build/bin/iosSimulatorArm64/debugFramework
+    // No Podfile, no CocoaPods, no pod install step.
+    listOf(iosArm64(), iosX64(), iosSimulatorArm64()).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+        }
+    }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(project(":core"))
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+            implementation(compose.components.resources)
+        }
+
+        androidMain.dependencies {
+            // androidx.activity:activity-compose resolved via compose BOM — no version needed here
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
+        }
+
+        // iosMain has no additional deps — CMP iOS target is automatic via the framework config above
+    }
+}
+
+android {
+    namespace = "io.github.kotindia.demo.shared"
+    compileSdk = 36
+    defaultConfig {
+        minSdk = 24
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}

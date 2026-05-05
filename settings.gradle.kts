@@ -41,3 +41,9 @@ dependencyResolutionManagement {
 rootProject.name = "kotindia"
 
 include(":core")
+
+// demo-app subprojects — NOT published to Maven Central.
+// Xcode project (demo-app/iosApp/) is NOT a Gradle subproject — directory only.
+include(":demo-app:shared")
+include(":demo-app:androidApp")
+include(":demo-app:desktopApp")

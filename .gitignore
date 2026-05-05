@@ -85,6 +85,17 @@ docs/
 **/*.agent-scratch.md
 
 # ============================================================
+# Xcode (demo-app/iosApp/)
+# ============================================================
+demo-app/iosApp/**/xcuserdata/
+demo-app/iosApp/**/.DS_Store
+demo-app/iosApp/**/*.xcuserstate
+demo-app/iosApp/**/*.xcworkspace/xcuserdata/
+demo-app/iosApp/**/build/
+demo-app/iosApp/**/Pods/
+demo-app/iosApp/**/*.xcworkspace
+
+# ============================================================
 # Secrets — defensive (should NEVER appear in this repo)
 # ============================================================
 # Generic env files
@@ -103,7 +114,15 @@ pubring.*
 .gnupg/
 
 # Sonatype / Maven Central credentials
-gradle.properties
+# Project-level gradle.properties IS committed (build settings only — never put creds here).
+# User-level ~/.gradle/gradle.properties holds Sonatype/GPG creds and is naturally outside
+# the repo tree.
+local.properties
+secring.*.gpg
+*.p12
+*.pfx
+*.jks
+*.keystore
 
 # AWS / GCP / cloud credentials
 .aws/

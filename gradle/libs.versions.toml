@@ -2,7 +2,6 @@
 # Single source of truth for all plugin and dependency versions.
 # NO hardcoded version strings in any build.gradle.kts.
 # NO coroutines — core module has zero runtime dependencies.
-# NO AGP — Android target deferred to Slice 2.
 
 [versions]
 kotlin = "2.3.21"
@@ -13,10 +12,22 @@ dokka = "2.2.0"
 vanniktech-publish = "0.33.0"
 binary-compat-validator = "0.18.1"
 kotest-property = "5.9.1"
+# demo-app — Compose Multiplatform (CMP 1.11.0-rc01 required for Kotlin 2.3.x compat)
+# CMP 1.10.x was built against Kotlin 2.2.x; 1.11.0-alpha03+ requires Kotlin 2.3+ (native/web).
+# KGP 2.3.21 satisfies this. Brain: dec_20260505_221259_cf4bf4
+compose-multiplatform = "1.11.0-rc01"
+# AGP frozen at 8.7.3 per PROJECT_PLAN §4 — no bump without Marcus + Karan sign-off.
+# CMP 1.11.x does not require AGP >= 9.0; 8.7.3 continues to work.
+agp = "8.7.3"
+# demo-app Android activity — activity-compose provides setContent + enableEdgeToEdge.
+# Compatible with AGP 8.7.3 / minSdk 24 / compileSdk 36.
+androidx-activity-compose = "1.10.1"
 
 [libraries]
 # Test-only dependencies (NEVER in core runtime)
 kotest-property = { module = "io.kotest:kotest-property", version.ref = "kotest-property" }
+# demo-app — Android activity-compose (MainActivity entry point)
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity-compose" }
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
@@ -26,3 +37,10 @@ kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 vanniktech-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-publish" }
 binary-compat-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "binary-compat-validator" }
+# demo-app plugins — apply false in root, applied in demo-app subproject build files
+android-application  = { id = "com.android.application",             version.ref = "agp" }
+android-library      = { id = "com.android.library",                 version.ref = "agp" }
+kotlin-android       = { id = "org.jetbrains.kotlin.android",        version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose",              version.ref = "compose-multiplatform" }
+# Compose compiler plugin — version must match Kotlin (KGP 2.3.21)
+kotlin-compose       = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

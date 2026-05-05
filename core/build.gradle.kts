@@ -27,6 +27,10 @@ plugins {
     alias(libs.plugins.kover)
     alias(libs.plugins.dokka)
     alias(libs.plugins.binary.compat.validator)
+    // NOTE (AC2 — demo-app ABI exclusion): binary-compat-validator is applied ONLY in this
+    // subproject (:core). The demo-app subprojects (shared, androidApp, desktopApp) are separate
+    // Gradle projects — they are structurally invisible to apiValidation. No ignoredProjects
+    // configuration is needed. Confirmed: demo-app/shared/build.gradle.kts (comment, line 8).
     alias(libs.plugins.vanniktech.publish)
 }
 

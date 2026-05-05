@@ -1,0 +1,87 @@
+name: Demo App
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # NOT triggered on version tags — release.yml handles tags.
+  # demo-app build failures block PRs but do NOT block release.yml (OQ-3 RESOLVED).
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-jvm-android:
+    name: Build (JVM + Android)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Build demo-app:androidApp (assembleDebug)
+        run: ./gradlew :demo-app:androidApp:assembleDebug --no-daemon --stacktrace
+
+      - name: Build demo-app:desktopApp (assemble)
+        run: ./gradlew :demo-app:desktopApp:assemble --no-daemon --stacktrace
+
+      # -----------------------------------------------------------------------
+      # AC10 exclusion verifications — confirm demo-app does not pollute :core
+      # -----------------------------------------------------------------------
+
+      - name: Verify — :core:apiCheck still green (demo-app excluded from ABI check)
+        run: ./gradlew :core:apiCheck --no-daemon
+
+      - name: Verify — :core:koverVerify still at 100% (demo-app excluded from coverage)
+        run: ./gradlew :core:koverVerify --no-daemon
+
+      - name: Verify — publishToMavenLocal produces only :core artifact
+        run: |
+          ./gradlew publishToMavenLocal --no-daemon
+          UNEXPECTED=$(find ~/.m2/repository/io/github/kotindia -mindepth 1 -maxdepth 1 -type d | grep -v '/core$' || true)
+          if [[ -n "$UNEXPECTED" ]]; then
+            echo "FAIL: Unexpected Maven publications found under io/github/kotindia/:"
+            echo "$UNEXPECTED"
+            exit 1
+          fi
+          echo "OK: Only io/github/kotindia/core artifact present in Maven Local."
+
+  build-ios-framework:
+    name: Build (iOS Framework)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Link iOS Simulator framework
+        # Verifies Kotlin/Native compilation for iosSimulatorArm64 (M-series Mac CI runner).
+        # Actual Xcode build is verified locally by Sandeep — Xcode project deferred to Slice 13b.
+        run: ./gradlew :demo-app:shared:linkDebugFrameworkIosSimulatorArm64 --no-daemon --stacktrace

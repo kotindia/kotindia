@@ -1,71 +1,36 @@
 # demo-app/iosApp — iOS Xcode Project
 
-## Status: Xcode project skeleton deferred to Slice 13b
+## Status: Ready to run (Slice 13b complete)
 
-The Xcode `.xcodeproj` file (`project.pbxproj`) is not committed in this slice.
-Authoring `project.pbxproj` by hand is unreliable and brittle across Xcode versions.
-The Swift source files (`iOSApp.swift`, `ContentView.swift`) ARE committed here so the
-Swift code is version-controlled even though the Xcode project file is not.
-
-The Kotlin/KMP side is complete: the shared framework builds via Gradle.
+The Xcode project is committed. Open `demo-app/iosApp/iosApp.xcodeproj` in Xcode,
+select the `iosApp` scheme + iPhone 16e simulator, and press Run. The KMP shared
+framework is rebuilt automatically before each Xcode build via the embedded Gradle
+run script.
 
 ---
 
-## Build the shared framework (Gradle)
+## Open and run (Slice 13b — project committed)
+
+Prerequisites: macOS with Xcode 16+, KMP shared framework built at least once.
+
+1. Build the shared framework (first time only, or after KMP source changes):
 
 ```bash
 # From repo root
 ./gradlew :demo-app:shared:linkDebugFrameworkIosSimulatorArm64 --no-daemon
 ```
 
-Output framework location:
+2. Open `demo-app/iosApp/iosApp.xcodeproj` in Xcode.
+3. Select scheme `iosApp` and simulator `iPhone 16e`.
+4. Press Run (Cmd+R). The Gradle run script rebuilds the framework automatically on each build.
+
+Framework location (used by the Xcode project via `$(SRCROOT)/../shared/...`):
 
 ```
 demo-app/shared/build/bin/iosSimulatorArm64/debugFramework/shared.framework
 ```
 
-This path is used in CI (`demo-app.yml` — `build-ios-framework` job) to verify the
-framework compiles correctly on `macos-latest`.
-
----
-
-## Set up the Xcode project locally (Slice 13b or manual)
-
-Follow these steps in Xcode to create the project that wraps the KMP framework:
-
-### 1. Create the Xcode project
-
-1. Open Xcode → File → New → Project → iOS → App
-2. Product Name: `iosApp`
-3. Bundle Identifier: `io.github.kotindia.demo`
-4. Interface: SwiftUI
-5. Language: Swift
-6. Save to: `demo-app/iosApp/` (replace the generated `iosApp/` subdirectory)
-
-### 2. Add the KMP framework
-
-1. In Xcode: select the `iosApp` target → Build Settings → Framework Search Paths
-2. Add: `$(SRCROOT)/../../shared/build/bin/iosSimulatorArm64/debugFramework`
-   (SRCROOT-relative — required for reproducible builds across machines; Marcus arch condition)
-3. In Build Phases → Link Binary With Libraries → add `shared.framework`
-4. In Build Phases → + → New Run Script Phase → add:
-
-```bash
-cd "$SRCROOT/../.." && ./gradlew :demo-app:shared:embedAndSignAppleFrameworkForXcode
-```
-
-5. In Build Phases → Embed Frameworks → add `shared.framework` with "Embed & Sign"
-
-### 3. Replace generated Swift source files
-
-Copy the committed Swift files into the Xcode project:
-
-- `demo-app/iosApp/iosApp/iOSApp.swift` → replaces the generated `iOSApp.swift`
-- `demo-app/iosApp/iosApp/ContentView.swift` → replaces the generated `ContentView.swift`
-
-### 4. Build and run
-
-Select scheme `iosApp` → simulator `iPhone 16 Pro` (arm64) → Run.
+This path is also verified in CI (`demo-app.yml` — `build-ios-framework` job) on `macos-latest`.
 
 ---
 

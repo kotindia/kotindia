@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`iOSApp.swift`, `ContentView.swift`) committed to `demo-app/iosApp/iosApp/`. Setup steps
   documented in `demo-app/iosApp/README.md`. Direct `.framework` embedding per Marcus arch ruling
   (OQ-1 RESOLVED) — no CocoaPods.
+- Slice 13b: iOS Xcode project skeleton committed (`demo-app/iosApp/iosApp.xcodeproj/`).
+  Direct `.framework` embedding, no CocoaPods. Scheme `iosApp`, deployment target iOS 15.0,
+  Swift 5.0. Targets iPhone 16e simulator (arm64). Framework Search Path resolves via
+  `$(SRCROOT)/../shared/build/bin/iosSimulatorArm64/debugFramework`. Pre-compile Gradle run
+  script rebuilds the KMP framework automatically on each Xcode build. Verified:
+  `xcodebuild -list` lists target `iosApp` + scheme `iosApp`; `xcodebuild ... build` succeeds.
 
 ## [0.1.0] - 2026-05-05
 

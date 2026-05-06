@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
+# Least-privilege: docs job only generates HTML and uploads as workflow
+# artifact. GitHub Pages deploy is gated to release.yml (tag-triggered).
+permissions:
+  contents: read
+
 jobs:
   dokka:
     name: Generate Dokka HTML

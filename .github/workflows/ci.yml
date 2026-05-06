@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+# Least-privilege: no write access needed for build/test/lint.
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

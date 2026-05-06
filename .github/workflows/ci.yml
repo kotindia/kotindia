@@ -37,11 +37,17 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
 
-      - name: Run check (compile + test + lint + koverVerify + apiCheck + enforceZeroDeps)
-        run: ./gradlew check --no-daemon --stacktrace
+      # Scoped to :core only — the demo-app modules are exercised by the
+      # dedicated `Demo App` workflow (.github/workflows/demo-app.yml). Running
+      # root `check` here would also run AndroidX/Compose lint detectors against
+      # the demo-app, which crash with IncompatibleClassChangeError under AGP 9
+      # until the upstream lint artifacts ship a fix. Library-side gates live
+      # entirely in :core.
+      - name: Run :core:check (compile + test + lint + koverVerify + apiCheck + enforceZeroDeps)
+        run: ./gradlew :core:check --no-daemon --stacktrace
 
-      - name: Run apiCheck
-        run: ./gradlew apiCheck --no-daemon
+      - name: Run :core:apiCheck
+        run: ./gradlew :core:apiCheck --no-daemon
 
       - name: Generate Kover HTML report
         run: ./gradlew :core:koverHtmlReport --no-daemon

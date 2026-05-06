@@ -52,8 +52,13 @@ jobs:
         run: ./gradlew :core:koverVerify --no-daemon
 
       - name: Verify — publishToMavenLocal produces only :core artifact
+        # AC10 exclusion guard. Pass empty signingInMemoryKey explicitly so
+        # mavenPublishing's conditional signAllPublications() (in
+        # core/build.gradle.kts) skips signing — CI has no GPG creds (those
+        # only exist in release.yml's secrets injection). The intent here is
+        # enumerating which modules publish, not actually signing artifacts.
         run: |
-          ./gradlew publishToMavenLocal --no-daemon
+          ./gradlew publishToMavenLocal --no-daemon -PsigningInMemoryKey=
           UNEXPECTED=$(find ~/.m2/repository/io/github/kotindia -mindepth 1 -maxdepth 1 -type d | grep -v '/core$' || true)
           if [[ -n "$UNEXPECTED" ]]; then
             echo "FAIL: Unexpected Maven publications found under io/github/kotindia/:"

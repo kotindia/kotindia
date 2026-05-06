@@ -32,8 +32,11 @@ jobs:
       - name: Validate Gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
 
-      - name: Run check before publishing
-        run: ./gradlew check --no-daemon --stacktrace
+      - name: Run :core:check before publishing
+        # Scoped to :core only — the published library. demo-app modules are
+        # exercised by Demo App workflow (build.gradle.kts has Android lint
+        # detector incompatibility with AGP 9 — see ci.yml comment).
+        run: ./gradlew :core:check --no-daemon --stacktrace
 
       - name: Publish to Maven Central
         env:

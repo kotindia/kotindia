@@ -195,7 +195,18 @@ dokka {
 
 mavenPublishing {
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
-    signAllPublications()
+
+    // Sign publications only when GPG credentials are present.
+    // - Local dev publishToMavenLocal works without GPG.
+    // - CI's AC10 exclusion guard (Demo App workflow) runs publishToMavenLocal
+    //   without GPG to enumerate published artifacts, NOT to publish for real.
+    // - release.yml injects ORG_GRADLE_PROJECT_signingInMemoryKey from secrets;
+    //   that path enables signing and uploads signed artifacts to Sonatype.
+    val hasSigningKey =
+        providers.gradleProperty("signingInMemoryKey").orNull?.isNotBlank() == true
+    if (hasSigningKey) {
+        signAllPublications()
+    }
 
     coordinates("io.github.kotindia", "core", "0.1.0")
 

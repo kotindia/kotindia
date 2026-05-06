@@ -51,21 +51,32 @@ jobs:
       - name: Verify — :core:koverVerify still at 100% (demo-app excluded from coverage)
         run: ./gradlew :core:koverVerify --no-daemon
 
-      - name: Verify — publishToMavenLocal produces only :core artifact
+      - name: Verify — publishToMavenLocal produces only :core artifacts
         # AC10 exclusion guard. Pass empty signingInMemoryKey explicitly so
         # mavenPublishing's conditional signAllPublications() (in
         # core/build.gradle.kts) skips signing — CI has no GPG creds (those
-        # only exist in release.yml's secrets injection). The intent here is
-        # enumerating which modules publish, not actually signing artifacts.
+        # only exist in release.yml's secrets injection). The intent is to
+        # enumerate which modules publish, not to sign artifacts.
+        #
+        # Vanniktech KMP publishing emits one directory per Kotlin target:
+        #   core/                           — kotlinMultiplatform BOM
+        #   core-jvm/                       — JVM variant
+        #   core-iosarm64/                  — iOS device
+        #   core-iossimulatorarm64/         — iOS simulator (Apple Silicon)
+        #   core-iosx64/                    — iOS simulator (Intel)
+        # All five are legitimate :core artifacts. The invariant we want to
+        # enforce is: every directory under io/github/kotindia/ must start
+        # with 'core' (anything else = a demo-app module leaked).
         run: |
           ./gradlew publishToMavenLocal --no-daemon -PsigningInMemoryKey=
-          UNEXPECTED=$(find ~/.m2/repository/io/github/kotindia -mindepth 1 -maxdepth 1 -type d | grep -v '/core$' || true)
+          UNEXPECTED=$(find ~/.m2/repository/io/github/kotindia -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -vE '^core(-[a-z0-9]+)?$' || true)
           if [[ -n "$UNEXPECTED" ]]; then
             echo "FAIL: Unexpected Maven publications found under io/github/kotindia/:"
             echo "$UNEXPECTED"
             exit 1
           fi
-          echo "OK: Only io/github/kotindia/core artifact present in Maven Local."
+          echo "OK: Only :core artifacts present in Maven Local:"
+          find ~/.m2/repository/io/github/kotindia -mindepth 1 -maxdepth 1 -type d -printf '  - %f\n'
 
   build-ios-framework:
     name: Build (iOS Framework)

@@ -66,6 +66,9 @@ Thumbs.db
 # Claude Code per-project config (reveals AI workflow internals)
 .claude/
 
+# superpowers brainstorming companion (mockups, session state)
+.superpowers/
+
 # Agent-internal project context (has personal/career framing,
 # absolute /Users paths, internal agent identities)
 CLAUDE.md
@@ -73,7 +76,20 @@ CLAUDE.md
 # Agent-generated working docs (PRD drafts, architecture decisions,
 # sprint plans, test strategy — all internal). Curated /docs for
 # the public docs site go in a separate location later.
-docs/
+# Exception: docs/superpowers/ holds brainstorming specs and
+# implementation plans — those ARE public, they capture design
+# rationale future contributors and maintainers need.
+docs/architecture/
+docs/build/
+docs/pm/
+docs/prd/
+docs/qa/
+docs/launch/
+docs/api/
+docs/PROJECT_PLAN.md
+docs/BLOCKERS.md
+docs/*.md
+!docs/superpowers/
 
 # Agent-brain SAN compressed code cache + index
 .san/

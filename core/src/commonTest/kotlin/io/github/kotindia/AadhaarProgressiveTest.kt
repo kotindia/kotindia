@@ -71,6 +71,10 @@ class AadhaarProgressiveTest {
             ProgressiveResult.Invalid(InvalidReason.INVALID_FORMAT, ValidationContext.None),
             result,
         )
+        // Devanagari digit २ (U+0968) must reject — guards against Phase 1 isDigit() regression
+        val devanagariResult = Aadhaar.validateProgressive("२34567")
+        assertIs<ProgressiveResult.Invalid>(devanagariResult)
+        assertEquals(InvalidReason.INVALID_FORMAT, devanagariResult.reason)
     }
 
     // T6 — over maxLength (all allowed chars) returns Invalid(WRONG_LENGTH, LengthMismatch)

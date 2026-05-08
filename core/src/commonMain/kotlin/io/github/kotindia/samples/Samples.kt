@@ -86,7 +86,8 @@ internal fun aadhaarSanitizeSample() {
 }
 
 internal fun aadhaarValidateProgressiveSample() {
-    when (val r = Aadhaar.validateProgressive("1234 567")) {
+    // 6 clean digits → Typing("2345 67")
+    when (val r = Aadhaar.validateProgressive("234567")) {
         is ProgressiveResult.Empty -> println("(blank)")
         is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
         is ProgressiveResult.Valid -> println("valid")
@@ -464,4 +465,253 @@ internal fun esicFormatSample() {
 
 internal fun esicMaskSample() {
     check(ESIC.mask("12345678901234567") == "XXXXXXXXXXXXX4567")
+}
+
+internal fun esicSanitizeSample() {
+    val cleaned: String = ESIC.sanitize("ESIC: 123 456 789 012 345 67 extra")
+    println(cleaned) // "12345678901234567"
+}
+
+internal fun esicValidateProgressiveSample() {
+    when (val r = ESIC.validateProgressive("1234567")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// AadhaarVID progressive
+// ---------------------------------------------------------------------------
+
+internal fun aadhaarVIDSanitizeSample() {
+    val cleaned: String = AadhaarVID.sanitize("VID: 2345 6789 0124 0000 extra")
+    println(cleaned) // "2345678901240000"
+}
+
+internal fun aadhaarVIDValidateProgressiveSample() {
+    // 8 clean digits → Typing("2345 6789")
+    when (val r = AadhaarVID.validateProgressive("23456789")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Mobile progressive
+// ---------------------------------------------------------------------------
+
+internal fun mobileSanitizeSample() {
+    val cleaned: String = Mobile.sanitize("+91 98765 43210 extra")
+    println(cleaned) // "9198765432" — '+' stripped, first 10 digits taken
+}
+
+internal fun mobileValidateProgressiveSample() {
+    when (val r = Mobile.validateProgressive("98765")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Pincode progressive
+// ---------------------------------------------------------------------------
+
+internal fun pincodeSanitizeSample() {
+    val cleaned: String = Pincode.sanitize("560 001 extra")
+    println(cleaned) // "560001"
+}
+
+internal fun pincodeValidateProgressiveSample() {
+    when (val r = Pincode.validateProgressive("5600")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// IFSC progressive
+// ---------------------------------------------------------------------------
+
+internal fun ifscSanitizeSample() {
+    val cleaned: String = IFSC.sanitize("HDFC 0000001 extra")
+    println(cleaned) // "HDFC0000001"
+}
+
+internal fun ifscValidateProgressiveSample() {
+    when (val r = IFSC.validateProgressive("HDFC0")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// PAN progressive
+// ---------------------------------------------------------------------------
+
+internal fun panSanitizeSample() {
+    val cleaned: String = PAN.sanitize("ABCPE 1234F extra")
+    println(cleaned) // "ABCPE1234F"
+}
+
+internal fun panValidateProgressiveSample() {
+    when (val r = PAN.validateProgressive("ABCPE")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// GSTIN progressive
+// ---------------------------------------------------------------------------
+
+internal fun gstinSanitizeSample() {
+    val cleaned: String = GSTIN.sanitize("27AAPFU0939F1ZV extra")
+    println(cleaned) // "27AAPFU0939F1ZV"
+}
+
+internal fun gstinValidateProgressiveSample() {
+    when (val r = GSTIN.validateProgressive("27AAPFU")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// IMEI progressive
+// ---------------------------------------------------------------------------
+
+internal fun imeiSanitizeSample() {
+    val cleaned: String = IMEI.sanitize("356938035643809 extra")
+    println(cleaned) // "356938035643809"
+}
+
+internal fun imeiValidateProgressiveSample() {
+    when (val r = IMEI.validateProgressive("35693803")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// UAN progressive
+// ---------------------------------------------------------------------------
+
+internal fun uanSanitizeSample() {
+    val cleaned: String = UAN.sanitize("1001 2345 6789 extra")
+    println(cleaned) // "100123456789"
+}
+
+internal fun uanValidateProgressiveSample() {
+    when (val r = UAN.validateProgressive("10012345")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CIN progressive
+// ---------------------------------------------------------------------------
+
+internal fun cinSanitizeSample() {
+    val cleaned: String = CIN.sanitize("L17110MH1973PLC019786 extra")
+    println(cleaned) // "L17110MH1973PLC019786"
+}
+
+internal fun cinValidateProgressiveSample() {
+    when (val r = CIN.validateProgressive("L17110MH")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DL progressive
+// ---------------------------------------------------------------------------
+
+internal fun dlSanitizeSample() {
+    val cleaned: String = DL.sanitize("MH01 20230012345 extra")
+    println(cleaned) // "MH0120230012345"
+}
+
+internal fun dlValidateProgressiveSample() {
+    when (val r = DL.validateProgressive("MH012023")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// VehicleRC progressive
+// ---------------------------------------------------------------------------
+
+internal fun vehicleRCSanitizeSample() {
+    val cleaned: String = VehicleRC.sanitize("MH-01-AB-1234 extra")
+    println(cleaned) // "MH01AB1234"
+}
+
+internal fun vehicleRCValidateProgressiveSample() {
+    when (val r = VehicleRC.validateProgressive("MH01AB")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Passport progressive
+// ---------------------------------------------------------------------------
+
+internal fun passportSanitizeSample() {
+    val cleaned: String = Passport.sanitize("A 1234567 extra")
+    println(cleaned) // "A1234567"
+}
+
+internal fun passportValidateProgressiveSample() {
+    when (val r = Passport.validateProgressive("A123")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
+}
+
+// ---------------------------------------------------------------------------
+// TAN progressive
+// ---------------------------------------------------------------------------
+
+internal fun tanSanitizeSample() {
+    val cleaned: String = TAN.sanitize("MUMD 12345A extra")
+    println(cleaned) // "MUMD12345A"
+}
+
+internal fun tanValidateProgressiveSample() {
+    when (val r = TAN.validateProgressive("MUMD123")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
 }

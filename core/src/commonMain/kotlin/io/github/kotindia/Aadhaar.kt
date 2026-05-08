@@ -7,7 +7,10 @@ import io.github.kotindia.internal.Verhoeff
 
 // Top-level private constant — constructed once at class-load time, not per call.
 // Prevents per-call Set<Char> allocation inside Aadhaar.allowedChars.
-private val AADHAAR_ALLOWED_CHARS: Set<Char> = ('0'..'9').toSet()
+// Explicit setOf literal — avoids ('0'..'9').toSet() which may accept non-ASCII digits
+// on some targets via CharRange semantics (dec_20260503_013128_d2b486 regression guard).
+private val AADHAAR_ALLOWED_CHARS: Set<Char> =
+    setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
 
 /**
  * Validator, formatter, and masker for Aadhaar numbers issued by UIDAI.
@@ -220,12 +223,14 @@ public object Aadhaar {
      * inputs always return [ProgressiveResult.Typing].
      *
      * State machine evaluation order (first match wins):
-     * 1. Trim whitespace. If result is empty → [ProgressiveResult.Empty]
-     * 2. Any character not in [allowedChars] → [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT]
-     * 3. Length > [maxLength] (all allowed chars) → [ProgressiveResult.Invalid] with [InvalidReason.WRONG_LENGTH]
+     * 1. Trim whitespace
+     * 2. If trimmed result is empty → [ProgressiveResult.Empty]
+     * 3. Any character not in [allowedChars] → [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT]
+     * 4. Length > [maxLength] (all allowed chars) → [ProgressiveResult.Invalid] with [InvalidReason.WRONG_LENGTH]
      *    and [ValidationContext.LengthMismatch]
-     * 4. Length in `1..(maxLength - 1)` → [ProgressiveResult.Typing] with formatted partial text
-     * 5. Length == [maxLength] → delegates to [validate]; returns [ProgressiveResult.Valid] or
+     * 5. Length in `1..(maxLength - 1)` → [ProgressiveResult.Typing] with formatted partial text
+     *    (`"1234 5678 9"` style — groups of 4 separated by spaces)
+     * 6. Length == [maxLength] → delegates to [validate]; returns [ProgressiveResult.Valid] or
      *    [ProgressiveResult.Invalid] with appropriate [InvalidReason]
      *
      * @param value Raw Aadhaar input, possibly partial, possibly with spaces or other chars.

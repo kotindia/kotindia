@@ -14,58 +14,86 @@ public final class io/github/kotindia/Aadhaar {
 public final class io/github/kotindia/AadhaarVID {
 	public static final field INSTANCE Lio/github/kotindia/AadhaarVID;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/AadhaarVID;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/CIN {
 	public static final field INSTANCE Lio/github/kotindia/CIN;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/DL {
 	public static final field INSTANCE Lio/github/kotindia/DL;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/DL;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/ESIC {
 	public static final field INSTANCE Lio/github/kotindia/ESIC;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/ESIC;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/GSTIN {
 	public static final field INSTANCE Lio/github/kotindia/GSTIN;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/IFSC {
 	public static final field INSTANCE Lio/github/kotindia/IFSC;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/IMEI {
 	public static final field INSTANCE Lio/github/kotindia/IMEI;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/IMEI;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/InvalidReason : java/lang/Enum {
@@ -84,35 +112,51 @@ public final class io/github/kotindia/Mobile {
 	public static final field INSTANCE Lio/github/kotindia/Mobile;
 	public final fun format (Ljava/lang/String;Z)Ljava/lang/String;
 	public static synthetic fun format$default (Lio/github/kotindia/Mobile;Ljava/lang/String;ZILjava/lang/Object;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/Mobile;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/PAN {
 	public static final field INSTANCE Lio/github/kotindia/PAN;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/PAN;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/Passport {
 	public static final field INSTANCE Lio/github/kotindia/Passport;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/Passport;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/Pincode {
 	public static final field INSTANCE Lio/github/kotindia/Pincode;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public abstract interface class io/github/kotindia/ProgressiveResult {
@@ -160,17 +204,25 @@ public final class io/github/kotindia/ProgressiveResult$Valid : io/github/kotind
 public final class io/github/kotindia/TAN {
 	public static final field INSTANCE Lio/github/kotindia/TAN;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/UAN {
 	public static final field INSTANCE Lio/github/kotindia/UAN;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/UAN;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/VPA {
@@ -227,7 +279,11 @@ public final class io/github/kotindia/ValidationResult$Valid : io/github/kotindi
 public final class io/github/kotindia/VehicleRC {
 	public static final field INSTANCE Lio/github/kotindia/VehicleRC;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 

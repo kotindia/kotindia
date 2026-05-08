@@ -39,6 +39,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with only `org.jetbrains.kotlin:kotlin-stdlib` transitive — zero-dep guarantee held in the
   published artifact.
 
+- **Progressive validation API (Slice 14)** — `validateProgressive()`, `sanitize()`,
+  `maxLength`, `allowedChars` added to 14 validators: `AadhaarVID`, `PAN`, `GSTIN`, `IFSC`,
+  `Mobile`, `Pincode`, `IMEI`, `UAN`, `CIN`, `DL`, `VehicleRC`, `Passport`, `ESIC`, `TAN`.
+  `Aadhaar` progressive API was added in Slice 14-A (see prior entry). `VPA` deferred per
+  OQ-14-1 (no allowedChars contract without PSP-list enforcement). Each validator exposes:
+  - `maxLength: Int` — hard cap for sanitized input length.
+  - `allowedChars: Set<Char>` — top-level constant, allocated once at class-load time.
+  - `sanitize(rawInput: String): String` — filter to `allowedChars` + `take(maxLength)`.
+    Pure, idempotent: `sanitize(sanitize(x)) == sanitize(x)` for all inputs.
+  - `validateProgressive(value: String): ProgressiveResult` — AC4 state machine (empty →
+    bad-char → over-length → partial → complete). Partial inputs of the correct character
+    class NEVER return `ProgressiveResult.Invalid`.
+  - `formatPartial` decisions per OQ-14-2: digit-only validators (`Mobile`, `UAN`) use
+    `chunked`-based spacing; all alphanumeric validators use `uppercase()` as-is; pure digit
+    no-checksum validators (`Pincode`, `IMEI`, `ESIC`) return digits as-is.
+  - `UAN` and `ESIC` Step 6 simplified to `return ProgressiveResult.Valid` (no `when` branch)
+    — structurally proven: any `maxLength`-digit string passes their `validate()` with no
+    checksum, so the `Invalid` branch was unreachable and would have broken 100% kover gate.
+  - 28 unit test files added (T1–T9 + PT1–PT3 per validator × 14 validators, minus 2 already
+    present for `Aadhaar`). 965 tests total, 0 failures. kover: 100% line coverage.
+
 ### Changed
 
 - `demo-app/shared` no longer declares the `iosX64` KMP target. Compose Multiplatform 1.11.0-rc01

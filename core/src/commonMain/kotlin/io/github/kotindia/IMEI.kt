@@ -5,6 +5,21 @@ package io.github.kotindia
 
 import io.github.kotindia.internal.Luhn
 
+// Top-level private constant — constructed once at class-load time, not per call.
+private val IMEI_ALLOWED_CHARS: Set<Char> =
+    setOf(
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+    )
+
 /**
  * Validator, formatter, and masker for IMEI numbers assigned by the GSMA.
  *
@@ -165,6 +180,96 @@ public object IMEI {
         repeat(maskCount) { masked.append(maskChar) }
         masked.append(value.substring(len - visibleEnd))
         return masked.toString()
+    }
+
+    // ---------------------------------------------------------------------------
+    // Progressive validation API (Slice 14 / Phase 2)
+    // ---------------------------------------------------------------------------
+
+    /**
+     * Maximum accepted length for a sanitized IMEI input.
+     *
+     * IMEI is always 15 digits. Any sanitized input longer than this is over-length.
+     */
+    public val maxLength: Int = 15
+
+    /**
+     * Set of characters accepted by [sanitize] and [validateProgressive] for IMEI.
+     *
+     * IMEI accepts only ASCII decimal digits (`'0'..'9'`). Any other character is stripped by
+     * [sanitize] and triggers [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT]
+     * inside [validateProgressive].
+     *
+     * Exposed as `Set<Char>` for uniform caller-side `if (char in IMEI.allowedChars)` checks.
+     * The constant is top-level to avoid per-call allocation.
+     */
+    public val allowedChars: Set<Char> = IMEI_ALLOWED_CHARS
+
+    /**
+     * Strips all characters not in [allowedChars] from [rawInput] and truncates to [maxLength].
+     *
+     * This is a pure, idempotent function — `sanitize(sanitize(x)) == sanitize(x)` for all inputs.
+     *
+     * @param rawInput Any string, including pasted values with spaces or symbols.
+     * @return A string containing only digits, at most [maxLength] characters long.
+     * @sample io.github.kotindia.samples.imeiSanitizeSample
+     */
+    public fun sanitize(rawInput: String): String = rawInput.filter { it in IMEI_ALLOWED_CHARS }.take(maxLength)
+
+    /**
+     * Validates an IMEI for incremental, as-you-type input.
+     *
+     * Callers should run [sanitize] first; internal spaces will return [ProgressiveResult.Invalid]
+     * with [InvalidReason.INVALID_FORMAT].
+     *
+     * Returns one of four [ProgressiveResult] states. The critical invariant: partial inputs of
+     * the correct character class (digits) NEVER return [ProgressiveResult.Invalid] — partial
+     * inputs always return [ProgressiveResult.Typing].
+     *
+     * State machine evaluation order (first match wins):
+     * 1. Trim whitespace. If result is empty → [ProgressiveResult.Empty]
+     * 2. Any character not in [allowedChars] → [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT]
+     * 3. Length > [maxLength] (all allowed chars) → [ProgressiveResult.Invalid] with [InvalidReason.WRONG_LENGTH]
+     *    and [ValidationContext.LengthMismatch]
+     * 4. Length in `1..(maxLength - 1)` → [ProgressiveResult.Typing] with formatted partial text
+     * 5. Length == [maxLength] → delegates to [validate]; returns [ProgressiveResult.Valid] or
+     *    [ProgressiveResult.Invalid] with appropriate [InvalidReason]
+     *
+     * @param value IMEI input to evaluate, possibly partial. Callers should run [sanitize]
+     *   first; internal spaces will return [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT].
+     * @return A [ProgressiveResult] indicating the current state of the input.
+     * @sample io.github.kotindia.samples.imeiValidateProgressiveSample
+     */
+    public fun validateProgressive(value: String): ProgressiveResult {
+        // Step 1: trim whitespace
+        val normalized = value.trim()
+
+        // Step 2: empty check
+        if (normalized.isEmpty()) return ProgressiveResult.Empty
+
+        // Step 3: bad-char check — fires BEFORE length check (AC4 priority)
+        if (normalized.any { it !in IMEI_ALLOWED_CHARS }) {
+            return ProgressiveResult.Invalid(InvalidReason.INVALID_FORMAT, ValidationContext.None)
+        }
+
+        // Step 4: over-length check
+        if (normalized.length > maxLength) {
+            return ProgressiveResult.Invalid(
+                InvalidReason.WRONG_LENGTH,
+                ValidationContext.LengthMismatch(expected = maxLength, actual = normalized.length),
+            )
+        }
+
+        // Step 5: partial check
+        if (normalized.length < maxLength) {
+            return ProgressiveResult.Typing(visualText = normalized) // digits as-is per OQ-14-2
+        }
+
+        // Step 6: complete — delegate to full validate()
+        return when (val result = validate(normalized)) {
+            is ValidationResult.Valid -> ProgressiveResult.Valid
+            is ValidationResult.Invalid -> ProgressiveResult.Invalid(result.reason, ValidationContext.None)
+        }
     }
 
     // ---------------------------------------------------------------------------

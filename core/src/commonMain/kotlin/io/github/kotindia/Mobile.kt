@@ -3,6 +3,21 @@
 
 package io.github.kotindia
 
+// Top-level private constant — constructed once at class-load time, not per call.
+private val MOBILE_ALLOWED_CHARS: Set<Char> =
+    setOf(
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+    )
+
 /**
  * Validator, formatter, and masker for Indian mobile numbers (TRAI numbering plan).
  *
@@ -66,7 +81,7 @@ public object Mobile {
         if (normalized.length != EXPECTED_LENGTH) {
             return ValidationResult.Invalid(InvalidReason.WRONG_LENGTH)
         }
-        if (normalized.any { it !in '0'..'9' }) {
+        if (normalized.any { it !in MOBILE_ALLOWED_CHARS }) {
             return ValidationResult.Invalid(InvalidReason.INVALID_FORMAT)
         }
         if (normalized[0] !in VALID_FIRST_DIGITS) {
@@ -164,6 +179,100 @@ public object Mobile {
     }
 
     // ---------------------------------------------------------------------------
+    // Progressive validation API (Slice 14 / Phase 2)
+    // ---------------------------------------------------------------------------
+
+    /**
+     * Maximum accepted length for a sanitized Mobile input.
+     *
+     * Indian mobile numbers are always 10 digits. Any sanitized input longer than this is over-length.
+     */
+    public val maxLength: Int = 10
+
+    /**
+     * Set of characters accepted by [sanitize] and [validateProgressive] for Mobile.
+     *
+     * Mobile accepts only ASCII decimal digits (`'0'..'9'`). Any other character is stripped by
+     * [sanitize] and triggers [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT].
+     *
+     * Note: `validateProgressive` works on the raw digit input, not the normalised form with
+     * `+91`/`0` prefix stripping. Callers should call [sanitize] on a raw digit string for
+     * progressive input (e.g. from a `TextField` that accepts digits only).
+     */
+    public val allowedChars: Set<Char> = MOBILE_ALLOWED_CHARS
+
+    /**
+     * Strips all characters not in [allowedChars] from [rawInput] and truncates to [maxLength].
+     *
+     * This is a pure, idempotent function — `sanitize(sanitize(x)) == sanitize(x)` for all inputs.
+     *
+     * @param rawInput Any string, including pasted values.
+     * @return A string containing only digits, at most [maxLength] characters long.
+     * @sample io.github.kotindia.samples.mobileSanitizeSample
+     */
+    public fun sanitize(rawInput: String): String = rawInput.filter { it in MOBILE_ALLOWED_CHARS }.take(maxLength)
+
+    /**
+     * Validates a mobile number for incremental, as-you-type input.
+     *
+     * Callers should run [sanitize] first; internal spaces will return [ProgressiveResult.Invalid]
+     * with [InvalidReason.INVALID_FORMAT].
+     *
+     * Works on the raw digit input — does NOT apply `+91`/`0` prefix stripping that [validate] does.
+     * For progressive input in a TextField, users type digits directly; prefix normalisation is a
+     * batch-paste concern handled by [validate].
+     *
+     * Returns one of four [ProgressiveResult] states. The critical invariant: partial inputs of
+     * the correct character class (digits) NEVER return [ProgressiveResult.Invalid] — partial
+     * inputs always return [ProgressiveResult.Typing].
+     *
+     * State machine evaluation order (first match wins):
+     * 1. Trim whitespace. If result is empty → [ProgressiveResult.Empty]
+     * 2. Any character not in [allowedChars] → [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT]
+     * 3. Length > [maxLength] (all allowed chars) → [ProgressiveResult.Invalid] with [InvalidReason.WRONG_LENGTH]
+     *    and [ValidationContext.LengthMismatch]
+     * 4. Length in `1..(maxLength - 1)` → [ProgressiveResult.Typing] with formatted partial text
+     * 5. Length == [maxLength] → delegates to [validate]; returns [ProgressiveResult.Valid] or
+     *    [ProgressiveResult.Invalid] with appropriate [InvalidReason]
+     *
+     * @param value Mobile number input to evaluate, possibly partial. Callers should run [sanitize]
+     *   first; internal spaces will return [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT].
+     * @return A [ProgressiveResult] indicating the current state of the input.
+     * @sample io.github.kotindia.samples.mobileValidateProgressiveSample
+     */
+    public fun validateProgressive(value: String): ProgressiveResult {
+        // Step 1: trim whitespace
+        val normalized = value.trim()
+
+        // Step 2: empty check
+        if (normalized.isEmpty()) return ProgressiveResult.Empty
+
+        // Step 3: bad-char check — fires BEFORE length check (AC4 priority)
+        if (normalized.any { it !in MOBILE_ALLOWED_CHARS }) {
+            return ProgressiveResult.Invalid(InvalidReason.INVALID_FORMAT, ValidationContext.None)
+        }
+
+        // Step 4: over-length check
+        if (normalized.length > maxLength) {
+            return ProgressiveResult.Invalid(
+                InvalidReason.WRONG_LENGTH,
+                ValidationContext.LengthMismatch(expected = maxLength, actual = normalized.length),
+            )
+        }
+
+        // Step 5: partial check
+        if (normalized.length < maxLength) {
+            return ProgressiveResult.Typing(visualText = formatPartial(normalized))
+        }
+
+        // Step 6: complete — delegate to full validate()
+        return when (val result = validate(normalized)) {
+            is ValidationResult.Valid -> ProgressiveResult.Valid
+            is ValidationResult.Invalid -> ProgressiveResult.Invalid(result.reason, ValidationContext.None)
+        }
+    }
+
+    // ---------------------------------------------------------------------------
     // Private normalisation helper
     // NOT part of the public API. May be promoted to internal/ if future
     // validators share the same stripping logic.
@@ -187,4 +296,13 @@ public object Mobile {
         s = s.replace(" ", "").replace("-", "")
         return s
     }
+
+    // ---------------------------------------------------------------------------
+    // Private progressive helpers
+    // ---------------------------------------------------------------------------
+
+    // formatPartial: operates on digits-only string.
+    // Mobile display: 5-5 grouping per OQ-14-2 Marcus ruling — no +91 prefix.
+    // chunked(5) — "98765 4321" (Typing), "98765 43210" (full valid)
+    private fun formatPartial(digits: String): String = digits.chunked(5).joinToString(" ")
 }

@@ -26,6 +26,7 @@ import io.github.kotindia.Mobile
 import io.github.kotindia.PAN
 import io.github.kotindia.Passport
 import io.github.kotindia.Pincode
+import io.github.kotindia.ProgressiveResult
 import io.github.kotindia.TAN
 import io.github.kotindia.UAN
 import io.github.kotindia.VPA
@@ -77,6 +78,20 @@ internal fun aadhaarFormatSample() {
 internal fun aadhaarMaskSample() {
     check(Aadhaar.mask("234567890124") == "XXXXXXXX0124")
     check(Aadhaar.mask("234567890124", visibleStart = 4, visibleEnd = 0) == "2345XXXXXXXX")
+}
+
+internal fun aadhaarSanitizeSample() {
+    val cleaned: String = Aadhaar.sanitize("Aadhaar: 1234 5678 9012  more text")
+    println(cleaned) // "123456789012"
+}
+
+internal fun aadhaarValidateProgressiveSample() {
+    when (val r = Aadhaar.validateProgressive("1234 567")) {
+        is ProgressiveResult.Empty -> println("(blank)")
+        is ProgressiveResult.Typing -> println("typing: ${r.visualText}")
+        is ProgressiveResult.Valid -> println("valid")
+        is ProgressiveResult.Invalid -> println("invalid: ${r.reason}")
+    }
 }
 
 // ---------------------------------------------------------------------------

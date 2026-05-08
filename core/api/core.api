@@ -1,10 +1,14 @@
 public final class io/github/kotindia/Aadhaar {
 	public static final field INSTANCE Lio/github/kotindia/Aadhaar;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
+	public final fun getAllowedChars ()Ljava/util/Set;
+	public final fun getMaxLength ()I
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun mask (Ljava/lang/String;IIC)Ljava/lang/String;
 	public static synthetic fun mask$default (Lio/github/kotindia/Aadhaar;Ljava/lang/String;IICILjava/lang/Object;)Ljava/lang/String;
+	public final fun sanitize (Ljava/lang/String;)Ljava/lang/String;
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+	public final fun validateProgressive (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult;
 }
 
 public final class io/github/kotindia/AadhaarVID {
@@ -111,6 +115,48 @@ public final class io/github/kotindia/Pincode {
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
 }
 
+public abstract interface class io/github/kotindia/ProgressiveResult {
+}
+
+public final class io/github/kotindia/ProgressiveResult$Empty : io/github/kotindia/ProgressiveResult {
+	public static final field INSTANCE Lio/github/kotindia/ProgressiveResult$Empty;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kotindia/ProgressiveResult$Invalid : io/github/kotindia/ProgressiveResult {
+	public fun <init> (Lio/github/kotindia/InvalidReason;Lio/github/kotindia/ValidationContext;)V
+	public synthetic fun <init> (Lio/github/kotindia/InvalidReason;Lio/github/kotindia/ValidationContext;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lio/github/kotindia/InvalidReason;
+	public final fun component2 ()Lio/github/kotindia/ValidationContext;
+	public final fun copy (Lio/github/kotindia/InvalidReason;Lio/github/kotindia/ValidationContext;)Lio/github/kotindia/ProgressiveResult$Invalid;
+	public static synthetic fun copy$default (Lio/github/kotindia/ProgressiveResult$Invalid;Lio/github/kotindia/InvalidReason;Lio/github/kotindia/ValidationContext;ILjava/lang/Object;)Lio/github/kotindia/ProgressiveResult$Invalid;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getContext ()Lio/github/kotindia/ValidationContext;
+	public final fun getReason ()Lio/github/kotindia/InvalidReason;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kotindia/ProgressiveResult$Typing : io/github/kotindia/ProgressiveResult {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lio/github/kotindia/ProgressiveResult$Typing;
+	public static synthetic fun copy$default (Lio/github/kotindia/ProgressiveResult$Typing;Ljava/lang/String;ILjava/lang/Object;)Lio/github/kotindia/ProgressiveResult$Typing;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getVisualText ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kotindia/ProgressiveResult$Valid : io/github/kotindia/ProgressiveResult {
+	public static final field INSTANCE Lio/github/kotindia/ProgressiveResult$Valid;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class io/github/kotindia/TAN {
 	public static final field INSTANCE Lio/github/kotindia/TAN;
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
@@ -132,6 +178,29 @@ public final class io/github/kotindia/VPA {
 	public final fun format (Ljava/lang/String;)Ljava/lang/String;
 	public final fun isValid (Ljava/lang/String;)Z
 	public final fun validate (Ljava/lang/String;)Lio/github/kotindia/ValidationResult;
+}
+
+public abstract interface class io/github/kotindia/ValidationContext {
+}
+
+public final class io/github/kotindia/ValidationContext$LengthMismatch : io/github/kotindia/ValidationContext {
+	public fun <init> (II)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun copy (II)Lio/github/kotindia/ValidationContext$LengthMismatch;
+	public static synthetic fun copy$default (Lio/github/kotindia/ValidationContext$LengthMismatch;IIILjava/lang/Object;)Lio/github/kotindia/ValidationContext$LengthMismatch;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getActual ()I
+	public final fun getExpected ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class io/github/kotindia/ValidationContext$None : io/github/kotindia/ValidationContext {
+	public static final field INSTANCE Lio/github/kotindia/ValidationContext$None;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public abstract interface class io/github/kotindia/ValidationResult {

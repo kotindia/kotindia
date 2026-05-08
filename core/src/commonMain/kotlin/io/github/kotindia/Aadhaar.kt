@@ -5,6 +5,13 @@ package io.github.kotindia
 
 import io.github.kotindia.internal.Verhoeff
 
+// Top-level private constant — constructed once at class-load time, not per call.
+// Prevents per-call Set<Char> allocation inside Aadhaar.allowedChars.
+// Explicit setOf literal — avoids ('0'..'9').toSet() which may accept non-ASCII digits
+// on some targets via CharRange semantics (dec_20260503_013128_d2b486 regression guard).
+private val AADHAAR_ALLOWED_CHARS: Set<Char> =
+    setOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+
 /**
  * Validator, formatter, and masker for Aadhaar numbers issued by UIDAI.
  *
@@ -167,8 +174,112 @@ public object Aadhaar {
     }
 
     // ---------------------------------------------------------------------------
+    // Progressive validation API (Slice 14 / Phase 2)
+    // ---------------------------------------------------------------------------
+
+    /**
+     * Maximum accepted length for a sanitized Aadhaar input.
+     *
+     * Aadhaar is always 12 digits. Any sanitized input longer than this is over-length.
+     */
+    public val maxLength: Int = 12
+
+    /**
+     * Set of characters accepted by [sanitize] and [validateProgressive] for Aadhaar.
+     *
+     * Aadhaar accepts only ASCII decimal digits (`'0'..'9'`). Any other character is stripped by
+     * [sanitize] and triggers [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT]
+     * inside [validateProgressive].
+     *
+     * Exposed as `Set<Char>` for uniform caller-side `if (char in Aadhaar.allowedChars)` checks.
+     * The constant is top-level to avoid per-call allocation.
+     */
+    public val allowedChars: Set<Char> = AADHAAR_ALLOWED_CHARS
+
+    /**
+     * Strips all characters not in [allowedChars] from [rawInput] and truncates to [maxLength].
+     *
+     * This is a pure, idempotent function — `sanitize(sanitize(x)) == sanitize(x)` for all inputs.
+     * Useful for restricting keyboard input or cleaning a pasted value before passing to
+     * [validateProgressive].
+     *
+     * Examples:
+     * - `sanitize("1234 5678 9012")` → `"123456789012"` (spaces stripped)
+     * - `sanitize("1234abcd56789012345")` → `"123456789012"` (letters stripped, truncated at 12)
+     * - `sanitize("abc")` → `""` (all non-allowed → empty)
+     * - `sanitize("")` → `""`
+     *
+     * @param rawInput Any string, including pasted values with spaces, letters, or symbols.
+     * @return A string containing only digits, at most [maxLength] characters long.
+     * @sample io.github.kotindia.samples.aadhaarSanitizeSample
+     */
+    public fun sanitize(rawInput: String): String = rawInput.filter { it in AADHAAR_ALLOWED_CHARS }.take(maxLength)
+
+    /**
+     * Validates an Aadhaar number for incremental, as-you-type input.
+     *
+     * Returns one of four [ProgressiveResult] states. The critical invariant: partial inputs of
+     * the correct character class (digits) NEVER return [ProgressiveResult.Invalid] — partial
+     * inputs always return [ProgressiveResult.Typing].
+     *
+     * State machine evaluation order (first match wins):
+     * 1. Trim whitespace
+     * 2. If trimmed result is empty → [ProgressiveResult.Empty]
+     * 3. Any character not in [allowedChars] → [ProgressiveResult.Invalid] with [InvalidReason.INVALID_FORMAT]
+     * 4. Length > [maxLength] (all allowed chars) → [ProgressiveResult.Invalid] with [InvalidReason.WRONG_LENGTH]
+     *    and [ValidationContext.LengthMismatch]
+     * 5. Length in `1..(maxLength - 1)` → [ProgressiveResult.Typing] with formatted partial text
+     *    (`"1234 5678 9"` style — groups of 4 separated by spaces)
+     * 6. Length == [maxLength] → delegates to [validate]; returns [ProgressiveResult.Valid] or
+     *    [ProgressiveResult.Invalid] with appropriate [InvalidReason]
+     *
+     * @param value Raw Aadhaar input, possibly partial, possibly with spaces or other chars.
+     * @return A [ProgressiveResult] indicating the current state of the input.
+     * @sample io.github.kotindia.samples.aadhaarValidateProgressiveSample
+     */
+    public fun validateProgressive(value: String): ProgressiveResult {
+        // Step 1: trim whitespace
+        val normalized = value.trim()
+
+        // Step 2: empty check
+        if (normalized.isEmpty()) return ProgressiveResult.Empty
+
+        // Step 3: bad-char check — fires BEFORE length check (AC4 priority)
+        if (normalized.any { it !in AADHAAR_ALLOWED_CHARS }) {
+            return ProgressiveResult.Invalid(InvalidReason.INVALID_FORMAT, ValidationContext.None)
+        }
+
+        // Step 4: over-length check
+        if (normalized.length > maxLength) {
+            return ProgressiveResult.Invalid(
+                InvalidReason.WRONG_LENGTH,
+                ValidationContext.LengthMismatch(expected = maxLength, actual = normalized.length),
+            )
+        }
+
+        // Step 5: partial check
+        if (normalized.length < maxLength) {
+            return ProgressiveResult.Typing(visualText = formatPartial(normalized))
+        }
+
+        // Step 6: complete — delegate to full validate()
+        return when (val result = validate(normalized)) {
+            is ValidationResult.Valid -> ProgressiveResult.Valid
+            is ValidationResult.Invalid -> ProgressiveResult.Invalid(result.reason, ValidationContext.None)
+        }
+    }
+
+    // ---------------------------------------------------------------------------
     // Private normalisation helper
     // Aadhaar is all-digits — no uppercase transform needed.
     // ---------------------------------------------------------------------------
     private fun normalize(value: String): String = value.trim().replace(Regex("\\s"), "")
+
+    // ---------------------------------------------------------------------------
+    // Private progressive helpers
+    // ---------------------------------------------------------------------------
+
+    // formatPartial: operates on sanitized (digits-only) string, not raw input.
+    // Aadhaar display standard: groups of 4 separated by spaces ("XXXX XXXX XXXX").
+    private fun formatPartial(digits: String): String = digits.chunked(4).joinToString(" ")
 }
